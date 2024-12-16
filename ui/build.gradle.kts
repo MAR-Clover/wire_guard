@@ -65,6 +65,8 @@ android {
 }
 
 dependencies {
+    implementation("com.google.dagger:dagger:2.42")  // Make sure you specify the version
+    kapt("com.google.dagger:dagger-compiler:2.42")
     implementation(project(":tunnel"))
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.annotation)

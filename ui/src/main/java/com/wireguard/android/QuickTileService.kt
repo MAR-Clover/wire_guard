@@ -57,10 +57,14 @@ class QuickTileService : TileService() {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    startActivityAndCollapse(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE))
-                } else {
-                    @Suppress("DEPRECATION")
-                    startActivityAndCollapse(intent)
+                    // Use PendingIntent for Android 14 (UpsideDownCake) and above
+                    val pendingIntent = PendingIntent.getActivity(
+                        this,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                    startActivityAndCollapse(pendingIntent)
                 }
             }
             else -> {
@@ -73,7 +77,13 @@ class QuickTileService : TileService() {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !Settings.canDrawOverlays(this@QuickTileService)) {
                                 val permissionIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
                                 permissionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivityAndCollapse(PendingIntent.getActivity(this@QuickTileService, 0, permissionIntent, PendingIntent.FLAG_IMMUTABLE))
+                                val permissionPendingIntent = PendingIntent.getActivity(
+                                    this@QuickTileService,
+                                    0,
+                                    permissionIntent,
+                                    PendingIntent.FLAG_IMMUTABLE
+                                )
+                                startActivityAndCollapse(permissionPendingIntent)
                                 return@launch
                             }
                             val toggleIntent = Intent(this@QuickTileService, TunnelToggleActivity::class.java)
@@ -85,6 +95,7 @@ class QuickTileService : TileService() {
             }
         }
     }
+
 
     override fun onCreate() {
         isAdded = true
